@@ -1,48 +1,62 @@
-"""Core data model for a 2x2x2 cube.
-
-Learning goal: keep the cube state independent from FastAPI, React, and the
-search algorithm. Every other layer should ask this module to read or change
-the cube instead of manipulating raw lists directly.
-"""
-
 from dataclasses import dataclass
 
-FACES = ("U", "R", "F", "D", "L", "B")
-COLOURS = frozenset({"W", "R", "G", "Y", "O", "B"})
-STICKERS_PER_FACE = 4
+FACES = ("U", "F", "R", "B", "L", "D")
+COLOURS = ("W", "B", "O", "G", "R", "Y")
+FACE_SIZE = 4
+STICKER_COUNT = len(FACES) * FACE_SIZE
+ALLOWED_COLOURS = frozenset(COLOURS)
+
+
+SOLVED_FACE_COLOURS = dict(zip(FACES, COLOURS))
 
 
 @dataclass(frozen=True)
 class CubeState:
-    """Immutable cube snapshot stored as 24 stickers."""
-
+    """Immutable 24-sticker state: U, F, R, B, L, D, four stickers each."""
     stickers: tuple[str, ...]
 
-    @classmethod
-    def solved(cls) -> "CubeState":
-        """Return the solved cube used by tests and scramble generation."""
-        # TODO: construct one block of four stickers for every face in FACES.
-        raise NotImplementedError
+    def __post_init__(self):
+        stickers = tuple(sticker.strip().upper() for sticker in self.stickers)
+
+        if len(stickers) != STICKER_COUNT:
+            raise ValueError("A 2x2x2 cube must contain exactly 24 stickers")
+
+        if set(stickers) - ALLOWED_COLOURS:
+            raise ValueError("Use only W, B, O, G, R, Y as sticker colours")
+
+        if any(stickers.count(colour) != FACE_SIZE for colour in COLOURS):
+            raise ValueError("Each colour must appear exactly four times")
+
+        object.__setattr__(self, "stickers", stickers)
 
     @classmethod
-    def from_faces(cls, faces: dict[str, list[str]]) -> "CubeState":
-        """Convert six UI face arrays into one validated internal state."""
-        # TODO: validate face names, lengths, legal colours, and four occurrences
-        # of every colour before constructing the immutable tuple.
-        raise NotImplementedError
+    def solved(cls):
+        solved_stickers = tuple(
+            SOLVED_FACE_COLOURS[face]
+            for face in FACES
+            for _ in range(FACE_SIZE)
+        )
+        return cls(solved_stickers)
 
-    def to_faces(self) -> dict[str, list[str]]:
-        """Convert the internal tuple back to the shape expected by the UI."""
-        # TODO: slice four stickers at a time and map each slice to FACES.
-        raise NotImplementedError
+    @classmethod
+    def from_faces(cls, faces: dict[str, list[str]]):
+        if set(faces) != set(FACES):
+            raise ValueError("Exactly U, F, R, B, L, D faces are required")
 
-    def is_solved(self) -> bool:
-        """Tell the solver whether every face contains one uniform colour."""
-        # TODO: check every group of four stickers, not only colour counts.
-        raise NotImplementedError
+        if any(len(faces[face]) != FACE_SIZE for face in FACES):
+            raise ValueError("Each face must contain four stickers")
 
-    def key(self) -> tuple[str, ...]:
-        """Return the hashable identity used by visited-state search sets."""
-        # TODO: return the canonical tuple representation.
-        raise NotImplementedError
+        stickers = tuple(value for face in FACES for value in faces[face])
+        return cls(stickers)
 
+    def to_faces(self):
+        return {
+            face: list(self.stickers[index * FACE_SIZE:index * FACE_SIZE + FACE_SIZE])
+            for index, face in enumerate(FACES)
+        }
+
+    def is_solved(self):
+        return all(
+            len(set(self.stickers[index:index + FACE_SIZE])) == 1
+            for index in range(0, STICKER_COUNT, FACE_SIZE)
+        )
