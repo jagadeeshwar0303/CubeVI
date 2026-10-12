@@ -1,30 +1,29 @@
+"""HTTP routes: web requests translated into application-service calls."""
+
 from fastapi import APIRouter, HTTPException
-from app.cube.scramble import generate_scramble
-from app.cube.state import CubeState
-from app.nlp.parser import parse_constraint
-from app.schemas import SolveRequest, SolveResponse
-from app.solver.solver import solve
+
+from app.schemas import ScrambleResponse, SolveRequest, SolveResponse
 
 router = APIRouter()
 
+
 @router.get("/health")
-def health():
+def health() -> dict[str, str]:
+    """Health check used by the frontend and deployment tooling."""
     return {"status": "ok"}
 
-@router.get("/scramble")
-def scramble(length: int = 6):
-    moves, cube = generate_scramble(length)
-    return {"scramble": moves, "faces": cube.to_faces()}
+
+@router.get("/scramble", response_model=ScrambleResponse)
+def scramble(length: int = 6) -> ScrambleResponse:
+    """Return a demo scramble and its resulting face colours."""
+    # TODO: validate length, call generate_scramble(), and serialize the state.
+    raise HTTPException(status_code=501, detail="Scramble route is a learning TODO")
+
 
 @router.post("/solve", response_model=SolveResponse)
-def solve_cube(request: SolveRequest):
-    try:
-        cube = CubeState.from_faces(request.faces)
-    except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
-    parsed = parse_constraint(request.constraint)
-    result = solve(cube, parsed)
-    if result is None:
-        raise HTTPException(status_code=422, detail="No solution found within the search depth")
-    return SolveResponse(valid=True, moves=result.moves, depth=len(result.moves), explanation=result.explanation, parsed_constraint=parsed)
+def solve_cube(request: SolveRequest) -> SolveResponse:
+    """Validate, parse, solve, and serialize one user request."""
+    # TODO: construct CubeState, parse request.constraint, call solve(), then map
+    # invalid input to 400 and no-solution results to 422.
+    raise HTTPException(status_code=501, detail="Solve route is a learning TODO")
 

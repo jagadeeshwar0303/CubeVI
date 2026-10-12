@@ -1,24 +1,29 @@
-from collections import deque
-from app.cube.moves import FACE_PERMUTATIONS, MOVE_SUFFIXES, apply_move
+"""Search algorithms for the AI portion of CubeVI."""
 
-def breadth_first_search(start, max_depth=8):
-    if start.is_solved():
-        return []
-    queue = deque([(start, [])])
-    visited = {start.stickers}
-    while queue:
-        state, path = queue.popleft()
-        if len(path) >= max_depth:
-            continue
-        for face in FACE_PERMUTATIONS:
-            for suffix in MOVE_SUFFIXES:
-                move = face + suffix
-                next_state = apply_move(state, move)
-                next_path = path + [move]
-                if next_state.is_solved():
-                    return next_path
-                if next_state.stickers not in visited:
-                    visited.add(next_state.stickers)
-                    queue.append((next_state, next_path))
-    return None
+from app.cube.state import CubeState
+
+
+def breadth_first_search(start: CubeState, max_depth: int = 8) -> list[str] | None:
+    """Find a shortest solution for small scrambles."""
+    # TODO: use a deque of (state, path), a visited set, all legal moves, and
+    # stop expanding paths at max_depth. This is the first algorithm to learn.
+    raise NotImplementedError
+
+
+def depth_limited_search(start: CubeState, limit: int) -> list[str] | None:
+    """Explore one depth limit using recursive depth-first search."""
+    # TODO: implement recursive backtracking and avoid immediate reversals.
+    raise NotImplementedError
+
+
+def iterative_deepening_search(start: CubeState, max_depth: int) -> list[str] | None:
+    """Repeat depth-limited search with limits 0..max_depth."""
+    # TODO: call depth_limited_search for each limit and return first solution.
+    raise NotImplementedError
+
+
+def ida_star(start: CubeState, max_depth: int = 14) -> list[str] | None:
+    """Final intended search: iterative deepening plus a heuristic bound."""
+    # TODO: implement thresholded DFS using f = g + h and lower_bound(state).
+    raise NotImplementedError
 

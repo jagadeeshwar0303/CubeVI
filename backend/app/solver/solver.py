@@ -1,15 +1,22 @@
+"""Stable solver facade used by API routes."""
+
 from dataclasses import dataclass
-from app.solver.search import breadth_first_search
+
+from app.cube.state import CubeState
+
 
 @dataclass(frozen=True)
 class SolveResult:
+    """Keep search details behind a small result object."""
+
     moves: list[str]
     explanation: str
+    nodes_expanded: int = 0
 
-def solve(cube, constraint):
-    if cube.is_solved():
-        return SolveResult([], "The cube is already solved.")
-    depth = int(constraint["value"]) if constraint.get("type") == "max_moves" else 8
-    moves = breadth_first_search(cube, depth)
-    return None if moves is None else SolveResult(moves, f"Breadth-first search found a solution in {len(moves)} moves.")
+
+def solve(cube: CubeState, constraint: dict[str, object]) -> SolveResult | None:
+    """Choose search settings from parsed constraint data."""
+    # TODO: handle solved input, choose a depth, call IDA*, and create an
+    # explanation that the frontend can show beside the move sequence.
+    raise NotImplementedError
 

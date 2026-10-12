@@ -1,39 +1,45 @@
+"""Move notation and state transitions.
+
+Learning goal: encode each face turn as a permutation. Search code should call
+apply_move() rather than knowing sticker indexes itself.
+"""
+
 from app.cube.state import CubeState
 
-# Old sticker index -> new sticker index. Baseline move families: U, R, F.
-FACE_PERMUTATIONS = {
-    "U": (1, 3, 0, 2, 20, 21, 6, 7, 4, 5, 10, 11, 12, 13, 14, 15, 8, 9, 18, 19, 16, 17, 22, 23),
-    "R": (0, 9, 2, 11, 5, 7, 4, 6, 8, 13, 10, 15, 12, 22, 14, 20, 16, 17, 18, 19, 1, 21, 3, 23),
-    "F": (0, 1, 4, 6, 12, 5, 13, 7, 9, 11, 8, 10, 17, 19, 14, 15, 16, 2, 18, 3, 20, 21, 22, 23),
+FACE_PERMUTATIONS: dict[str, tuple[int, ...]] = {
+    # TODO: replace each empty tuple with a verified old-index -> new-index map.
+    "U": (), "R": (), "F": (), "D": (), "L": (), "B": (),
 }
 MOVE_SUFFIXES = ("", "'", "2")
 
-def normalize_move(move):
-    move = move.strip().upper()
-    if not move or move[0] not in FACE_PERMUTATIONS or move[1:] not in MOVE_SUFFIXES:
-        raise ValueError(f"Unsupported move: {move}")
-    return move
 
-def apply_move(cube, move):
-    move = normalize_move(move)
-    turns = 2 if move.endswith("2") else 3 if move.endswith("'") else 1
-    current = cube
-    for _ in range(turns):
-        values = [""] * 24
-        for old, new in enumerate(FACE_PERMUTATIONS[move[0]]):
-            values[new] = current.stickers[old]
-        current = CubeState(tuple(values))
-    return current
+def normalize_move(move: str) -> str:
+    """Validate notation such as R, R', or R2 and return canonical text."""
+    # TODO: uppercase the face, preserve suffix, and raise ValueError for bad input.
+    raise NotImplementedError
 
-def apply_sequence(cube, moves):
-    for move in moves:
-        cube = apply_move(cube, move)
-    return cube
 
-def inverse_move(move):
-    move = normalize_move(move)
-    return move if move.endswith("2") else move[0] if move.endswith("'") else move + "'"
+def apply_move(cube: CubeState, move: str) -> CubeState:
+    """Return a new state after one face move without mutating cube."""
+    # TODO: use the permutation once, twice, or three times for normal, half,
+    # and inverse turns respectively.
+    raise NotImplementedError
 
-def inverse_sequence(moves):
-    return [inverse_move(move) for move in reversed(moves)]
+
+def apply_sequence(cube: CubeState, moves: list[str]) -> CubeState:
+    """Apply a scramble or solution from left to right."""
+    # TODO: repeatedly call apply_move and return the final state.
+    raise NotImplementedError
+
+
+def inverse_move(move: str) -> str:
+    """Return the notation that reverses one move."""
+    # TODO: R <-> R' and R2 -> R2.
+    raise NotImplementedError
+
+
+def inverse_sequence(moves: list[str]) -> list[str]:
+    """Reverse a sequence and invert every move."""
+    # TODO: reverse the list, then call inverse_move on each item.
+    raise NotImplementedError
 
