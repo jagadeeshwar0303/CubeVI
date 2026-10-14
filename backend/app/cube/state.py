@@ -5,43 +5,76 @@ class CubeState:
     def __init__(self, stickers):
         cleaned_stickers = []
 
-        # Make every sticker uppercase and remove accidental spaces.
         for sticker in stickers:
             cleaned_sticker = sticker.strip().upper()
-            cleaned_stickers.append(cleaned_sticker)
+            cleaned_stickers.append(cleaned_sticker) #removing the spaces and converting to uppercase for uniformity
 
-        # A 2x2 cube has 6 faces, with 4 stickers on each face.
         if len(cleaned_stickers) != 24:
-            raise ValueError("A cube must contain exactly 24 stickers")
+            raise ValueError("A cube must contain exactly 24 stickers") #a string must be of length 24 to represent a cube, not less not more.
 
-        # Check that every sticker uses one of the allowed colours.
         for sticker in cleaned_stickers:
             if sticker not in COLOURS:
-                raise ValueError("Use only W, B, O, G, R, Y as sticker colours")
+                raise ValueError("Use only W, B, O, G, R, Y as sticker colours") #verifiying if the stickers are only from the allowed colours i.e are they valid or not.
 
-        # Each colour must occur exactly four times.
         for colour in COLOURS:
-            colour_count = cleaned_stickers.count(colour)
+            if cleaned_stickers.count(colour) != 4:
+                raise ValueError("Each colour must appear exactly four times") #a particular color  must appear exactly 4 times on a cube, if not then it is an invalid cube.
 
-            if colour_count != 4:
-                raise ValueError("Each colour must appear exactly four times")
-
-        # A tuple prevents the stickers from being changed by accident later.
+        # Finally a tuple of immutable stickers stored in the instance variable for comparison and hashing purposes.
         self.stickers = tuple(cleaned_stickers)
 
-    def __eq__(self, other):
+    def __eq__(self,other):
         if not isinstance(other, CubeState):
             return False
 
         return self.stickers == other.stickers
 
-    def solved():
-        stickers = []
-
-        # FACES and COLOURS have matching positions:
-        # U -> W, F -> B, R -> O, B -> G, L -> R, D -> Y
-        for colour in COLOURS:
-            for number in range(4):
-                stickers.append(colour)
+    def solved(self):
+        stickers=[]
+        for color in COLOURS:
+            for i in range(4):
+                stickers.append(color)
 
         return CubeState(stickers)
+
+    def is_solved(self):
+        pivot = 0
+
+        # cube is solved when all the four stickers of each face match
+
+        for face in FACES:
+           for number in range(4):
+                current_sticker = self.stickers[pivot + number]
+
+                if current_sticker != self.stickers[pivot]:  #self.sticker[pivot] is the first sticker of that particular face.
+                    return False
+           pivot += 4
+
+        return True
+
+    def from_faces(faces):
+        # confirming all the faces are present
+        if not all(x in faces for x in FACES):
+            raise ValueError("Missing one or more faces. All six faces must be present.")
+
+        # rejecting additional face names too.
+        if len(faces) != 6:
+            raise ValueError("Too many faces. Only six faces are allowed.")
+
+        stickers = []
+
+        #reading each face in the same fixed FACES order.
+        for i in FACES:
+            face_stickers = faces[i]
+
+            if len(face_stickers) != 4:
+                raise ValueError(f"Face {i} must have exactly four stickers.")
+
+            for j in face_stickers:
+                stickers.append(j)
+
+        return CubeState(stickers)
+
+
+
+
