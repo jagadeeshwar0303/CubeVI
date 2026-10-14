@@ -1,62 +1,47 @@
-from dataclasses import dataclass
-
 FACES = ("U", "F", "R", "B", "L", "D")
 COLOURS = ("W", "B", "O", "G", "R", "Y")
-FACE_SIZE = 4
-STICKER_COUNT = len(FACES) * FACE_SIZE
-ALLOWED_COLOURS = frozenset(COLOURS)
 
-
-SOLVED_FACE_COLOURS = dict(zip(FACES, COLOURS))
-
-
-@dataclass(frozen=True)
 class CubeState:
-    """Immutable 24-sticker state: U, F, R, B, L, D, four stickers each."""
-    stickers: tuple[str, ...]
+    def __init__(self, stickers):
+        cleaned_stickers = []
 
-    def __post_init__(self):
-        stickers = tuple(sticker.strip().upper() for sticker in self.stickers)
+        # Make every sticker uppercase and remove accidental spaces.
+        for sticker in stickers:
+            cleaned_sticker = sticker.strip().upper()
+            cleaned_stickers.append(cleaned_sticker)
 
-        if len(stickers) != STICKER_COUNT:
-            raise ValueError("A 2x2x2 cube must contain exactly 24 stickers")
+        # A 2x2 cube has 6 faces, with 4 stickers on each face.
+        if len(cleaned_stickers) != 24:
+            raise ValueError("A cube must contain exactly 24 stickers")
 
-        if set(stickers) - ALLOWED_COLOURS:
-            raise ValueError("Use only W, B, O, G, R, Y as sticker colours")
+        # Check that every sticker uses one of the allowed colours.
+        for sticker in cleaned_stickers:
+            if sticker not in COLOURS:
+                raise ValueError("Use only W, B, O, G, R, Y as sticker colours")
 
-        if any(stickers.count(colour) != FACE_SIZE for colour in COLOURS):
-            raise ValueError("Each colour must appear exactly four times")
+        # Each colour must occur exactly four times.
+        for colour in COLOURS:
+            colour_count = cleaned_stickers.count(colour)
 
-        object.__setattr__(self, "stickers", stickers)
+            if colour_count != 4:
+                raise ValueError("Each colour must appear exactly four times")
 
-    @classmethod
-    def solved(cls):
-        solved_stickers = tuple(
-            SOLVED_FACE_COLOURS[face]
-            for face in FACES
-            for _ in range(FACE_SIZE)
-        )
-        return cls(solved_stickers)
+        # A tuple prevents the stickers from being changed by accident later.
+        self.stickers = tuple(cleaned_stickers)
 
-    @classmethod
-    def from_faces(cls, faces: dict[str, list[str]]):
-        if set(faces) != set(FACES):
-            raise ValueError("Exactly U, F, R, B, L, D faces are required")
+    def __eq__(self, other):
+        if not isinstance(other, CubeState):
+            return False
 
-        if any(len(faces[face]) != FACE_SIZE for face in FACES):
-            raise ValueError("Each face must contain four stickers")
+        return self.stickers == other.stickers
 
-        stickers = tuple(value for face in FACES for value in faces[face])
-        return cls(stickers)
+    def solved():
+        stickers = []
 
-    def to_faces(self):
-        return {
-            face: list(self.stickers[index * FACE_SIZE:index * FACE_SIZE + FACE_SIZE])
-            for index, face in enumerate(FACES)
-        }
+        # FACES and COLOURS have matching positions:
+        # U -> W, F -> B, R -> O, B -> G, L -> R, D -> Y
+        for colour in COLOURS:
+            for number in range(4):
+                stickers.append(colour)
 
-    def is_solved(self):
-        return all(
-            len(set(self.stickers[index:index + FACE_SIZE])) == 1
-            for index in range(0, STICKER_COUNT, FACE_SIZE)
-        )
+        return CubeState(stickers)
