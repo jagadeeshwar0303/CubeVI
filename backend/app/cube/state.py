@@ -29,6 +29,8 @@ class CubeState:
 
         return self.stickers == other.stickers
 
+
+
     def solved(self):
         stickers=[]
         for color in COLOURS:
@@ -75,6 +77,29 @@ class CubeState:
 
         return CubeState(stickers)
 
+    def to_faces(self):
+        faces_dict = {}
+        pivot = 0
+
+        # Take four stickers at a time and assign them to a face.
+        for i in FACES:
+            faces_dict[i] = []
+
+            for number in range(4):
+                faces_dict[i].append(self.stickers[pivot]) #self.stickers[pivot] is the first sticker of that particular face.
+                pivot += 1
+
+        return faces_dict
+    #at the end the to_faces dictionary looks like this:
+    """
+    {
+        "U": ["W", "W", "W", "W"],
+        "F": ["B", "B", "B", "B"],
+        "R": ["O", "O", "O", "O"],
+        "B": ["G", "G", "G", "G"],
+        "L": ["R", "R", "R", "R"],
+        "D": ["Y", "Y", "Y", "Y"]
+    }"""
 
 
 
