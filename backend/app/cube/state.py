@@ -91,15 +91,15 @@ class CubeState:
 
         return faces_dict
     #at the end the to_faces dictionary looks like this:
-    """
-    {
-        "U": ["W", "W", "W", "W"],
-        "F": ["B", "B", "B", "B"],
-        "R": ["O", "O", "O", "O"],
-        "B": ["G", "G", "G", "G"],
-        "L": ["R", "R", "R", "R"],
-        "D": ["Y", "Y", "Y", "Y"]
-    }"""
+    # """
+    # {
+    #     "U": ["W", "W", "W", "W"],
+    #     "F": ["B", "B", "B", "B"],
+    #     "R": ["O", "O", "O", "O"],
+    #     "B": ["G", "G", "G", "G"],
+    #     "L": ["R", "R", "R", "R"],
+    #     "D": ["Y", "Y", "Y", "Y"]
+    # }"""
 
 
 
