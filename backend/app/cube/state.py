@@ -30,7 +30,6 @@ class CubeState:
         return self.stickers == other.stickers
 
 
-
     def solved(self):
         stickers=[]
         for color in COLOURS:
@@ -100,6 +99,5 @@ class CubeState:
         "L": ["R", "R", "R", "R"],
         "D": ["Y", "Y", "Y", "Y"]
     }"""
-
 
 
