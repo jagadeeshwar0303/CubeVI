@@ -17,27 +17,22 @@ MOVE_TABLES = {
         [3, 0, 1, 2, 4, 5, 6, 7],
         [0, 0, 0, 0, 0, 0, 0, 0],
     ),
-
     "D": (
         [0, 1, 2, 3, 5, 6, 7, 4],
         [0, 0, 0, 0, 0, 0, 0, 0],
     ),
-
     "R": (
         [4, 1, 2, 0, 7, 5, 6, 3],
         [2, 0, 0, 1, 1, 0, 0, 2],
     ),
-
     "L": (
         [0, 2, 6, 3, 4, 1, 5, 7],
         [0, 1, 2, 0, 0, 2, 1, 0],
     ),
-
     "F": (
         [1, 5, 2, 3, 0, 4, 6, 7],
         [1, 2, 0, 0, 2, 1, 0, 0],
     ),
-
     "B": (
         [0, 1, 3, 7, 4, 5, 2, 6],
         [0, 0, 1, 2, 0, 0, 2, 1],
@@ -62,7 +57,7 @@ def apply_basic_move(state: CubeState, basic_move: str) -> CubeState:
 
     # new corner orientation:
     new_co = [
-        (state.co[i] + co_delta[i]) % 3 
+        (state.co[permutation[i]] + co_delta[i]) % 3 
          for i in range(len(co_delta))
     ]
 
@@ -110,7 +105,7 @@ def apply_move(state: CubeState, move: str) -> CubeState:
     result = state.copy()
 
     for _ in range(turns):
-        result = apply_basic_move(result, move)
+        result = apply_basic_move(result, basic_move)
 
     return result
 
@@ -126,6 +121,6 @@ def apply_moves(state: CubeState, moves: list) -> CubeState:
     result = state.copy()
 
     for move in moves:
-        result = apply_moves(result, move)
+        result = apply_move(result, move)
 
     return result
