@@ -54,6 +54,9 @@ class CubeState:
             and all(o in [0, 1, 2] for o in self.co)
             and sum(self.co) % 3 == 0
         )
+    
+    def copy(self):
+        return CubeState(self.cp, self.co)
 
 
     def __repr__(self):
