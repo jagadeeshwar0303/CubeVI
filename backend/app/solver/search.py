@@ -131,8 +131,28 @@ class Algorithms:
             path_key.remove(next_key)
 
         return False
-        
 
+
+    def iterative_deepening_search(self, start_state: CubeState, max_depth: int = 7):
+
+        if not start_state.is_valid():
+            raise ValueError("Start state is invalid")
+
+        if start_state.is_solved():
+            return []
+
+        start_key = self.state_key(start_state)
+
+        for level in range(max_depth + 1):
+            path = []
+            path_key = {start_key}
+
+            found = self._dfs(start_state, 0, level, path, path_key)
+
+            if found:
+                return path
+
+        return None
     
 
 
