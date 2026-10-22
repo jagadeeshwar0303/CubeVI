@@ -21,7 +21,7 @@ class CubeState:
     )
 
 
-    def __init__(self, cp=None, co=None):
+def __init__(self, cp=None, co=None):
 
         # corner permutation : self.co is the singel purnutation of 8 corners (0 - 7) 
         self.cp = (
@@ -35,7 +35,7 @@ class CubeState:
             else [0] * 8
         )
 
-    def is_solved(self):
+def is_solved(self):
         """returns True if the cube is solved else False"""
 
         return (
@@ -61,3 +61,5 @@ class CubeState:
 
     def __repr__(self):
         return f"CubeState(cp={self.cp}, co={self.co})"
+
+    
