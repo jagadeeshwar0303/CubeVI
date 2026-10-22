@@ -2,16 +2,9 @@
 
 from app.cube.state import CubeState
 
+def heuristic(state: CubeState) -> int:
+    misplaced = sum(
+        state.cp[i] != i for i in range(8)
+    )
 
-def misplaced_stickers(cube: CubeState) -> int:
-    """Count stickers that differ from the solved reference."""
-    # TODO: implement this first as an educational progress signal.
-    raise NotImplementedError
-
-
-def lower_bound(cube: CubeState) -> int:
-    """Return a safe estimate used by IDA* threshold calculations."""
-    # TODO: begin conservatively, then improve using corner orientation and
-    # permutation tables. Explain why the bound must not overestimate.
-    raise NotImplementedError
-
+    return  (misplaced + 3) // 4
