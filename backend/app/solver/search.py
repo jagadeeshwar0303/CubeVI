@@ -2,7 +2,8 @@ from collections import deque
 from app.cube.state import CubeState
 from app.cube.moves import apply_move
 
-class BreadthFirstSearch:
+# BFS solution :
+class Algorithms:
 
     def __init__(self):
         # All 18 standard moves
@@ -33,6 +34,7 @@ class BreadthFirstSearch:
         path.reverse()
         return path
 
+    # BFS algorithm : 
     def breadth_first_search(self, start_state: CubeState):
         """
         Find a shortest solution using BFS.
@@ -79,10 +81,57 @@ class BreadthFirstSearch:
 
         return None
     
+    # DFS algorithm :
+    def depth_first_search(self, start_state: CubeState, max_depth: int = 7):
 
-    
+        if not start_state.is_valid():
+            raise ValueError('The start state of the cube is invalid')
 
-    
+        if start_state.is_solved():
+            return []
+
+        path = []
+        start_key = self.state_key(start_state)
+        path_key = {start_key}
+        found = self._dfs(start_state, 0, max_depth, path, path_key)
+
+        if found :
+            return path
+
+        return None
+
+    # DFS helper function :
+    def _dfs(self, curr_state: CubeState, depth: int, max_depth: int, path: list, path_key: set):
+
+        if curr_state.is_solved():
+            return True
+
+        # if the depth is greather than max_depth to prevent overflow terminate the search for that branch
+        if max_depth <= depth: return False
+
+        # Explore each possible move :
+        for move in self.moves:
+            next_state = apply_move(curr_state, move)
+            next_key = self.state_key(next_state)
+
+            # Avoid revisiting a state in the current path
+            if next_key in path_key:
+                continue
+
+            
+            path.append(move)
+            path_key.add(next_key)
+
+            # Recursively call the _dfs() function.
+            if self._dfs(next_state, depth+1, max_depth, path, path_key):
+                return True
+
+            # backtracking 
+            path.pop()
+            path_key.remove(next_key)
+
+        return False
+        
 
     
 
