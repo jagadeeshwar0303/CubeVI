@@ -1,6 +1,7 @@
 from collections import deque
 from app.cube.state import CubeState
 from app.cube.moves import apply_move
+from app.solver.heuristics import heuristic
 
 # BFS solution :
 class Algorithms:
@@ -153,6 +154,93 @@ class Algorithms:
                 return path
 
         return None
+
+
+    def ida_star(self, start_state: CubeState, max_depth: int = 14):
+
+        if not start_state.is_valid():
+            raise ValueError("Invalid start state.")
+
+        if start_state.is_solved():
+            return []
+
+        path = []
+        start_key = self.state_key(start_state)
+        path_key = {start_key} 
+
+        threshold = heuristic(start_state)
+
+        while threshold <= max_depth:
+
+            result = self._ida_star_search(
+                start_state,
+                0,
+                threshold,
+                max_depth,
+                path,
+                path_key
+            )
+
+            if result is True:
+                return path
+
+            if result == float('inf'):
+                return None
+
+            threshold = result
+
+        return None
+
+    def _ida_star_search(self, curr_state: CubeState, g, threshold, max_depth, path: list, path_key: set):
+
+        h = heuristic(curr_state)
+        f = h + g
+
+        # Prune if estimated total cost exceeds threshold
+        if f > threshold:
+            return f
+
+        # Goal test
+        if curr_state.is_solved():
+            return True
+
+        # Stop paths that exceed the maximum allowed solution depth
+        if g >= max_depth:
+            return float('inf')
+
+        minimum_excess = float('inf')
+        for move in self.moves:
+            next_state = apply_move(curr_state, move)
+            next_key = self.state_key(next_state)
+
+            # Avoid cycles on the current path
+            if next_key in path_key:
+                continue
+
+            path.append(move)
+            path_key.add(next_key)
+
+            result = self._ida_star_search(
+                next_state,
+                g+1,
+                threshold,
+                max_depth,
+                path,
+                path_key
+            )
+
+            if result is True:
+                return True
+
+            if result < minimum_excess:
+                minimum_excess = result
+
+            # backtrack 
+            path.pop()
+            path_key.remove(next_key)
+
+        return minimum_excess
+
     
 
 
