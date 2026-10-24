@@ -5,7 +5,7 @@ Corner positions:
 0 = URF, 1 = UFL, 2 = ULB, 3 = UBR
 4 = DFR, 5 = DLF, 6 = DBL, 7 = DRB
 
-purmutation list and co_delta list are used in the apply_basic_move function.
+permutation list and co_delta list are used in the apply_basic_move function.
 
 permutation list tells us which OLD position supplies the corner for each NEW position.
 co_delta[i] is the orientation change at NEW position i. 

@@ -21,9 +21,9 @@ class CubeState:
     )
 
 
-def __init__(self, cp=None, co=None):
+    def __init__(self, cp=None, co=None):
 
-        # corner permutation : self.co is the singel purnutation of 8 corners (0 - 7) 
+        # corner permutation : self.co is the single permutation of 8 corners (0 - 7)
         self.cp = (
             cp.copy() if cp is not None
             else list(range(8))
@@ -35,7 +35,7 @@ def __init__(self, cp=None, co=None):
             else [0] * 8
         )
 
-def is_solved(self):
+    def is_solved(self):
         """returns True if the cube is solved else False"""
 
         return (
@@ -43,7 +43,7 @@ def is_solved(self):
             and self.co == [0] * 8
         )
 
-def is_valid(self):
+    def is_valid(self):
         """ valid cube state : state which is achievable from the solved state using valid moves
         returns True if the cube state is valid otherwise False """
 
@@ -55,10 +55,10 @@ def is_valid(self):
             and sum(self.co) % 3 == 0
         )
     
-def copy(self):
+    def copy(self):
         return CubeState(self.cp, self.co)
 
-def __repr__(self):
+    def __repr__(self):
         return f"CubeState(cp={self.cp}, co={self.co})"
 
     
