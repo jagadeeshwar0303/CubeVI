@@ -1,7 +1,7 @@
 from collections import deque
 from app.cube.state import CubeState
 from app.cube.moves import apply_move
-from app.solver.heuristics import heuristic
+from app.solver.heuristics import CornerPatternDatabase
 
 # BFS solution :
 class Algorithms:
@@ -16,6 +16,15 @@ class Algorithms:
             "F", "F'", "F2",
             "B", "B'", "B2",
         ]
+
+        self.pdb1 = CornerPatternDatabase(
+            pattern_pieces=(0, 1, 2, 3)
+        )
+
+        self.pdb2 = CornerPatternDatabase(
+            pattern_pieces=(4, 5, 6, 7)
+        )
+
 
     @staticmethod
     def state_key(state: CubeState):
@@ -155,28 +164,34 @@ class Algorithms:
 
         return None
 
+    def IDA_star(self, initial_state: CubeState, max_depth = 20):
+        """
+        Solve the cube using IDA*.
 
-    def ida_star(self, start_state: CubeState, max_depth: int = 14):
+        Returns:
+            List of moves if solved.
+            None if no solution is found within max_depth.
+        """
 
-        if not start_state.is_valid():
+        if not initial_state.is_valid():
             raise ValueError("Invalid start state.")
 
-        if start_state.is_solved():
+        if initial_state.is_solved():
             return []
-
+        
+        initial_key = self.state_key(initial_state)
         path = []
-        start_key = self.state_key(start_state)
-        path_key = {start_key} 
+        path_key = {initial_key}
+        
+        bound = max(self.pdb1.heuristic(initial_state), self.pdb2.heuristic(initial_state))
 
-        threshold = heuristic(start_state)
+        while bound <= max_depth:
 
-        while threshold <= max_depth:
-
-            result = self._ida_star_search(
-                start_state,
+            result = self._ida_search(
+                initial_state,
                 0,
-                threshold,
-                max_depth,
+                bound,
+                None,
                 path,
                 path_key
             )
@@ -184,47 +199,52 @@ class Algorithms:
             if result is True:
                 return path
 
-            if result == float('inf'):
+            if result == float("inf"):
                 return None
 
-            threshold = result
+            bound = result
 
         return None
 
-    def _ida_star_search(self, curr_state: CubeState, g, threshold, max_depth, path: list, path_key: set):
+    
+    def _ida_search(self, current_state: CubeState, g, bound, previous_move, path: list, path_key: set):
 
-        h = heuristic(curr_state)
-        f = h + g
+        h = max(self.pdb1.heuristic(current_state), self.pdb2.heuristic(current_state))
+        f = g + h
 
-        # Prune if estimated total cost exceeds threshold
-        if f > threshold:
+        # Exceeded the current threshold.
+        if f > bound:
             return f
 
-        # Goal test
-        if curr_state.is_solved():
-            return True
+        # Goal test.
+        if current_state.is_solved():
+            return True 
 
-        # Stop paths that exceed the maximum allowed solution depth
-        if g >= max_depth:
-            return float('inf')
+        minimum_excess = float("inf")
 
-        minimum_excess = float('inf')
         for move in self.moves:
-            next_state = apply_move(curr_state, move)
+
+            # Skip consecutive moves of the same face.
+            if previous_move is not None:
+                if move[0] == previous_move[0]:
+                    continue
+
+
+            # move to next state
+            next_state = apply_move(current_state, move)
             next_key = self.state_key(next_state)
 
-            # Avoid cycles on the current path
             if next_key in path_key:
                 continue
 
             path.append(move)
             path_key.add(next_key)
 
-            result = self._ida_star_search(
+            result = self._ida_search(
                 next_state,
                 g+1,
-                threshold,
-                max_depth,
+                bound,
+                move,
                 path,
                 path_key
             )
@@ -235,62 +255,7 @@ class Algorithms:
             if result < minimum_excess:
                 minimum_excess = result
 
-            # backtrack 
             path.pop()
             path_key.remove(next_key)
 
         return minimum_excess
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def breadth_first_search(start: CubeState, max_depth: int = 8) -> list[str] | None:
-#     """Find a shortest solution for small scrambles."""
-#     # TODO: use a deque of (state, path), a visited set, all legal moves, and
-#     # stop expanding paths at max_depth. This is the first algorithm to learn.
-#     raise NotImplementedError
-
-
-# def depth_limited_search(start: CubeState, limit: int) -> list[str] | None:
-#     """Explore one depth limit using recursive depth-first search."""
-#     # TODO: implement recursive backtracking and avoid immediate reversals.
-#     raise NotImplementedError
-
-
-# def iterative_deepening_search(start: CubeState, max_depth: int) -> list[str] | None:
-#     """Repeat depth-limited search with limits 0..max_depth."""
-#     # TODO: call depth_limited_search for each limit and return first solution.
-#     raise NotImplementedError
-
-
-# def ida_star(start: CubeState, max_depth: int = 14) -> list[str] | None:
-#     """Final intended search: iterative deepening plus a heuristic bound."""
-#     # TODO: implement thresholded DFS using f = g + h and lower_bound(state).
-#     raise NotImplementedError
-
