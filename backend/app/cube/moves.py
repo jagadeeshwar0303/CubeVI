@@ -67,7 +67,7 @@ def apply_move(state: CubeState, move: str) -> CubeState:
     """
     Supported moves:
         U, D, R, L, F, B
-        U', D', R', L', F', B'
+        U', D', R', L', F', B',
         U2, D2, R2, L2, F2, B2
 
     rest all strings are considered as invalid inputs
@@ -95,7 +95,7 @@ def apply_move(state: CubeState, move: str) -> CubeState:
     # An inverse move = three clockwise quarter-turns.
     # A double move = two quarter-turns.
 
-    # defining a variabel 'turns' which represents number of turns
+    # defining a variable 'turns' which represents number of turns
     turns = {
         "" : 1,
         "'" : 3,

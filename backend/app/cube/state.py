@@ -29,7 +29,7 @@ class CubeState:
             else list(range(8))
         )
 
-        # corner orientations : each corner will have it's own orientations (0 or 1 or 2)
+        # corner orientations : each corner will have its own orientations (0 or 1 or 2)
         self.co = (
             co.copy() if co is not None
             else [0] * 8
