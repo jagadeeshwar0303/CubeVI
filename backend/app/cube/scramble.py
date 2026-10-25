@@ -1,10 +1,10 @@
 """Scramble generation for demos and repeatable experiments."""
 
 import random
-from .moves import apply_move
+from  .moves import apply_move
 from .state import CubeState
 
-ALL_MOVES = [
+all_moves=[
     "U", "U'", "U2",
     "D", "D'", "D2",
     "R", "R'", "R2",
@@ -13,25 +13,25 @@ ALL_MOVES = [
     "B", "B'", "B2",
 ]
 
-def generate_scramble(length: int = 20):
-    """ Generate a valid random 2x2x2 cube state 
-        length : number of random moves to apply """
+def generate_scramble(length: int=20):
+    """
+    Generate a valid random 2x2x2 CubeState.
+    length is the number of random moves to apply"""
 
-    if length < 0 : 
-        raise ValueError("Scramble length cannot be negative")
+    if length <= 0:
+        raise ValueError("Length of scramble must be positive")
 
     state = CubeState()
     scramble_moves = []
 
     previous_face = None
 
-    for _ in range(length):
 
-        # Avoid consecutive turns of the same face.
-        possible_moves = [
-            move for move in ALL_MOVES 
-            if move[0] != previous_face
-        ]
+    for _ in range(length):
+        #avoid consecutive turns of the same face.
+
+        possible_moves = [move for move in all_moves
+                          if move[0] != previous_face]
 
         move = random.choice(possible_moves)
 
@@ -40,9 +40,3 @@ def generate_scramble(length: int = 20):
         previous_face = move[0]
 
     return state, scramble_moves
-
-
-
-
-    
-

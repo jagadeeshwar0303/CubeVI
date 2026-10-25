@@ -23,13 +23,13 @@ class CubeState:
 
     def __init__(self, cp=None, co=None):
 
-        # corner permutation : self.co is the singel purnutation of 8 corners (0 - 7) 
+        # corner permutation : self.co is the single permutation of 8 corners (0 - 7)
         self.cp = (
             cp.copy() if cp is not None
             else list(range(8))
         )
 
-        # corner orientations : each corner will have it's own orientations (0 or 1 or 2)
+        # corner orientations : each corner will have its own orientations (0 or 1 or 2)
         self.co = (
             co.copy() if co is not None
             else [0] * 8
@@ -58,6 +58,7 @@ class CubeState:
     def copy(self):
         return CubeState(self.cp, self.co)
 
-
     def __repr__(self):
         return f"CubeState(cp={self.cp}, co={self.co})"
+
+    

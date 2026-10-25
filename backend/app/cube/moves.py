@@ -5,7 +5,7 @@ Corner positions:
 0 = URF, 1 = UFL, 2 = ULB, 3 = UBR
 4 = DFR, 5 = DLF, 6 = DBL, 7 = DRB
 
-purmutation list and co_delta list are used in the apply_basic_move function.
+permutation list and co_delta list are used in the apply_basic_move function.
 
 permutation list tells us which OLD position supplies the corner for each NEW position.
 co_delta[i] is the orientation change at NEW position i. 
@@ -67,7 +67,7 @@ def apply_move(state: CubeState, move: str) -> CubeState:
     """
     Supported moves:
         U, D, R, L, F, B
-        U', D', R', L', F', B'
+        U', D', R', L', F', B',
         U2, D2, R2, L2, F2, B2
 
     rest all strings are considered as invalid inputs
@@ -95,7 +95,7 @@ def apply_move(state: CubeState, move: str) -> CubeState:
     # An inverse move = three clockwise quarter-turns.
     # A double move = two quarter-turns.
 
-    # defining a variabel 'turns' which represents number of turns
+    # defining a variable 'turns' which represents number of turns
     turns = {
         "" : 1,
         "'" : 3,
